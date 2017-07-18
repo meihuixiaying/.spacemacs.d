@@ -39,6 +39,7 @@ values."
      prodigy
      search-engine
      graphviz
+     python
      (syntax-checking :variables syntax-checking-enable-by-default nil
                       syntax-checking-enable-tooltips nil)
      (spell-checking :variables spell-checking-enable-by-default nil)
@@ -92,7 +93,8 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(sicp)
+   dotspacemacs-additional-packages '(sicp
+                                      vue-mode)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    dotspacemacs-excluded-packages
@@ -174,17 +176,17 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(solarized-dark
-                         solarized-light)
+   ;; dotspacemacs-themes '(solarized-dark
+   ;;                       solarized-light)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 14
-                               :weight normal
+                               :size 12
+                               :weight light
                                :width normal
-                               :powerline-scale 1.1)
+                               :powerline-scale 0.9)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
    ;; The key used for Emacs commands (M-x) (after pressing on the leader key).
@@ -355,14 +357,15 @@ values."
   (setq warning-minimum-level :error)
   ;; hack for remove purpose mode
   (setq purpose-mode nil)
-
+  (setq python-shell-interpreter "/usr/bin/python")
   )
 
 (defun dotspacemacs/user-config ()
   ;;解决org表格里面中英文对齐的问题
   (when (configuration-layer/layer-usedp 'chinese)
     (when (and (spacemacs/system-is-mac) window-system)
-      (spacemacs//set-monospaced-font "Source Code Pro" "Hiragino Sans GB" 14 16)))
+      (spacemacs//set-monospaced-font "Source Code Pro" "powerline" 12 12)))
+  ;; Hiragino Sans GB 14 16
 
   ;; Setting Chinese Font
   (when (and (spacemacs/system-is-mswindows) window-system)
@@ -372,7 +375,7 @@ values."
     (dolist (charset '(kana han symbol cjk-misc bopomofo))
       (set-fontset-font (frame-parameter nil 'font)
                         charset
-                        (font-spec :family "Microsoft Yahei" :size 14))))
+                        (font-spec :family "Menlo, Monaco" :size 12))))
 
   (fset 'evil-visual-update-x-selection 'ignore)
 
@@ -398,7 +401,7 @@ values."
 
   (setq auto-mode-alist
         (append
-         '(("\\.vue\\'" . js2-mode)
+         '(("\\.vue\\'" . vue-mode)
            ("Capstanfile\\'" . yaml-mode)
            )
          auto-mode-alist))
@@ -427,12 +430,25 @@ values."
                              (local-set-key (kbd "RET") 'web-beautify-when-enter)
                              (local-set-key (kbd "}") 'web-beautify-when-branck) ))
 
+  ;; (load-file "/Users/wiggens/.spacemacs.d/layers/vue-mode/vue-mode.el")
+  ;; (add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
+
+  (load-file "/Users/wiggens/.spacemacs.d/layers/robot-mode/robot-mode.el")
+  (add-to-list 'auto-mode-alist '("\\.robot\\'" . robot-mode))
+  ;; (add-to-list 'load-path "/Users/wiggens/.spacemacs.d/layers/robot-mode")
   (add-to-list 'load-path "/Users/wiggens/.spacemacs.d/layers/neotree")
   (require 'neotree)
   (global-set-key [f7] 'neotree-toggle)
 
   ;; (add-to-list 'auto-mode-alist
   ;;              '("Capstanfile\\'" . yaml-mode))
+
+
+  (defun indent-buffer ()
+    "Indent the whole buffer."
+    (interactive)
+    (save-excursion
+      (indent-region (point-min) (point-max) nil)))
 
   (defun js-indent-line ()
     "Indent the current line as JavaScript."
@@ -465,8 +481,6 @@ values."
       (fundamental-mode)))
   (spacemacs/set-leader-keys "otm" 'zilongshanren/toggle-major-mode)
 
-  ;; (add-hook 'text-mode-hook 'spacemacs/toggle-spelling-checking-on)
-
   ;; https://github.com/syl20bnr/spacemacs/issues/7749
   (defun spacemacs/ivy-persp-switch-project (arg)
     (interactive "P")
@@ -481,8 +495,7 @@ values."
                           (let ((projectile-completion-system 'ivy)
                                 (old-default-directory default-directory))
                             (projectile-switch-project-by-name project)
-                            (setq default-directory old-default-directory))))))
-  )
+                            (setq default-directory old-default-directory)))))))
 
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)

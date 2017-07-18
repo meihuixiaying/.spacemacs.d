@@ -107,7 +107,6 @@
 
 (spacemacs/declare-prefix "ot" "Toggle")
 
-
 (global-set-key (kbd "<f1>") 'zilongshanren/helm-hotspots)
 (spacemacs/set-leader-keys "oo" 'zilongshanren/helm-hotspots)
 

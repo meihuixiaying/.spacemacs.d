@@ -710,8 +710,11 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
     (define-key evil-normal-state-map (kbd "[ b") 'previous-buffer)
     (define-key evil-normal-state-map (kbd "] b") 'next-buffer)
     (define-key evil-normal-state-map (kbd "M-y") 'counsel-yank-pop)
-
-    ;; (define-key evil-insert-state-map "\C-e" 'end-of-line)
+    (define-key evil-normal-state-map "\C-e" 'evil-end-of-line)
+    (define-key evil-insert-state-map "\C-e" 'end-of-line)
+    (define-key evil-visual-state-map "\C-e" 'evil-end-of-line)
+    (define-key evil-motion-state-map "\C-e" 'evil-end-of-line)
+    (define-key evil-insert-state-map "\C-e" 'evil-end-of-line)
     ;; (define-key evil-insert-state-map "\C-n" 'next-line)
     ;; (define-key evil-insert-state-map "\C-k" 'kill-line)
     (define-key evil-emacs-state-map (kbd "s-f") 'forward-word)
