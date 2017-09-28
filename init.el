@@ -40,6 +40,7 @@ values."
      search-engine
      graphviz
      python
+     pylint
      (syntax-checking :variables syntax-checking-enable-by-default nil
                       syntax-checking-enable-tooltips nil)
      (spell-checking :variables spell-checking-enable-by-default nil)
@@ -82,8 +83,8 @@ values."
      emacs-lisp
      (clojure :variables clojure-enable-fancify-symbols t)
      racket
-     (c-c++ :variables
-            c-c++-default-mode-for-headers 'c++-mode)
+     ;; (c-c++ :variables
+     ;;        c-c++-default-mode-for-headers 'c++-mode)
      zilongshanren
      (chinese :packages youdao-dictionary fcitx
               :variables chinese-enable-fcitx nil
@@ -386,7 +387,7 @@ values."
   (spacemacs|add-company-backends :modes text-mode)
 
   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
-
+  (add-hook 'after-init-hook #'global-flycheck-mode)
   ;; temp fix for ivy-switch-buffer
   ;; (spacemacs/set-leader-keys "bb" 'helm-mini)
 
@@ -433,16 +434,19 @@ values."
   ;; (load-file "/Users/wiggens/.spacemacs.d/layers/vue-mode/vue-mode.el")
   ;; (add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
 
+
+
   (load-file "/Users/wiggens/.spacemacs.d/layers/robot-mode/robot-mode.el")
   (add-to-list 'auto-mode-alist '("\\.robot\\'" . robot-mode))
-  ;; (add-to-list 'load-path "/Users/wiggens/.spacemacs.d/layers/robot-mode")
-  (add-to-list 'load-path "/Users/wiggens/.spacemacs.d/layers/neotree")
-  (require 'neotree)
-  (global-set-key [f7] 'neotree-toggle)
+  ;; (require 'neotree)
+  ;; (global-set-key [f7] 'neotree-toggle)
 
   ;; (add-to-list 'auto-mode-alist
   ;;              '("Capstanfile\\'" . yaml-mode))
 
+  ;;git-emacs
+  ;; (add-to-list 'load-path "/Users/wiggens/.spacemacs.d/layers/git-emacs/")
+  ;; (require 'git-emacs)
 
   (defun indent-buffer ()
     "Indent the whole buffer."
