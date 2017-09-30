@@ -32,59 +32,29 @@ values."
    dotspacemacs-configuration-layers
    '(
      ivy
-     better-defaults
-     ;; github
      ranger
-     colors
-     prodigy
-     search-engine
-     graphviz
-     python
-     pylint
+     ;; python
      (syntax-checking :variables syntax-checking-enable-by-default nil
                       syntax-checking-enable-tooltips nil)
-     (spell-checking :variables spell-checking-enable-by-default nil)
-     (vinegar :variables vinegar-reuse-dired-buffer t)
      (spacemacs-layouts :variables layouts-enable-autosave nil
                         layouts-autosave-delay 300)
-     (git :variables
-          git-magit-status-fullscreen t
-          magit-push-always-verify nil
-          magit-save-repository-buffers 'dontask
-          magit-revert-buffers 'silent
-          magit-refs-show-commit-count 'all
-          magit-revision-show-gravatars nil)
-     (ibuffer :variables ibuffer-group-buffers-by 'projects)
+
      (auto-completion :variables auto-completion-enable-sort-by-usage t
                       auto-completion-enable-snippets-in-popup t
-                      :disabled-for org markdown)
+                      :disabled-for markdown)
      (osx :variables osx-dictionary-dictionary-choice "Simplified Chinese - English")
      restclient
-     (gtags :disabled-for clojure emacs-lisp javascript latex python shell-scripts)
+     (gtags :disabled-for emacs-lisp javascript python shell-scripts)
      (shell :variables shell-default-shell 'eshell)
-     docker
-     ;; latex
-     deft
-     markdown
-     org
-     gpu
      yaml
-     react
      (python :variables
              python-test-runner '(nose pytest))
-     (ruby :variables ruby-version-manager 'chruby)
-     ruby-on-rails
-     lua
      html
      javascript
      (typescript :variables
                  typescript-fmt-on-save nil
                  typescript-fmt-tool 'typescript-formatter)
      emacs-lisp
-     (clojure :variables clojure-enable-fancify-symbols t)
-     racket
-     ;; (c-c++ :variables
-     ;;        c-c++-default-mode-for-headers 'c++-mode)
      zilongshanren
      (chinese :packages youdao-dictionary fcitx
               :variables chinese-enable-fcitx nil
@@ -135,6 +105,8 @@ values."
    ;; `--insecure' which forces the value of this variable to nil.
    ;; (default t)
    dotspacemacs-elpa-https t
+   ;; 设置代码行长度为120
+   ;; fill-column 120
    ;; Maximum allowed time in seconds to contact an ELPA repository.
    dotspacemacs-elpa-timeout 5
    ;; If non nil then spacemacs will check for updates at startup
@@ -306,7 +278,7 @@ values."
    ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
    ;; derivatives. If set to `relative', also turns on relative line numbers.
    ;; (default nil)
-   dotspacemacs-line-numbers nil
+   dotspacemacs-line-numbers t
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
    dotspacemacs-folding-method 'origami
@@ -344,30 +316,27 @@ values."
   (setq configuration-layer--elpa-archives
         '(("melpa-cn" . "https://elpa.zilongshanren.com/melpa/")
           ("org-cn"   . "https://elpa.zilongshanren.com/org/")
-          ("gnu-cn"   . "https://elpa.zilongshanren.com/gnu/")))
-
+          ("gnu-cn"   . "https://elpa.zilongshanren.com/gnu/")
+          ("gnu" . "http://elpa.gnu.org/packages/")
+          ("melpa" . "http://melpa.milkbox.net/packages/")))
   ;; https://github.com/syl20bnr/spacemacs/issues/2705
   ;; (setq tramp-mode nil)
-  (setq tramp-ssh-controlmaster-options
-        "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
+  ;; (setq tramp-ssh-controlmaster-options
+  ;; "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
 
   ;; ss proxy. But it will cause anacond-mode failed.
-  (setq socks-server '("Default server" "127.0.0.1" 1080 5))
-  (setq evil-shift-round nil)
+  ;; (setq socks-server '("Default server" "127.0.0.1" 1080 5))
+  ;; (setq evil-shift-round nil)
   (setq byte-compile-warnings '(not obsolete))
-  (setq warning-minimum-level :error)
+  ;; (setq warning-minimum-level :error)
   ;; hack for remove purpose mode
   (setq purpose-mode nil)
   (setq python-shell-interpreter "/usr/bin/python")
+  (when (not package-archive-contents)
+    (package-refresh-contents))
   )
 
 (defun dotspacemacs/user-config ()
-  ;;解决org表格里面中英文对齐的问题
-  (when (configuration-layer/layer-usedp 'chinese)
-    (when (and (spacemacs/system-is-mac) window-system)
-      (spacemacs//set-monospaced-font "Source Code Pro" "powerline" 12 12)))
-  ;; Hiragino Sans GB 14 16
-
   ;; Setting Chinese Font
   (when (and (spacemacs/system-is-mswindows) window-system)
     (setq ispell-program-name "aspell")
@@ -387,9 +356,7 @@ values."
   (spacemacs|add-company-backends :modes text-mode)
 
   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
-  (add-hook 'after-init-hook #'global-flycheck-mode)
-  ;; temp fix for ivy-switch-buffer
-  ;; (spacemacs/set-leader-keys "bb" 'helm-mini)
+  ;; (add-hook 'after-init-hook #'global-flycheck-mode)
 
   (global-hungry-delete-mode t)
   (spacemacs|diminish helm-gtags-mode)
@@ -404,6 +371,7 @@ values."
         (append
          '(("\\.vue\\'" . vue-mode)
            ("Capstanfile\\'" . yaml-mode)
+           ("\\.yml\\'". yaml-mode)
            )
          auto-mode-alist))
 
@@ -431,22 +399,8 @@ values."
                              (local-set-key (kbd "RET") 'web-beautify-when-enter)
                              (local-set-key (kbd "}") 'web-beautify-when-branck) ))
 
-  ;; (load-file "/Users/wiggens/.spacemacs.d/layers/vue-mode/vue-mode.el")
-  ;; (add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
-
-
-
   (load-file "/Users/wiggens/.spacemacs.d/layers/robot-mode/robot-mode.el")
   (add-to-list 'auto-mode-alist '("\\.robot\\'" . robot-mode))
-  ;; (require 'neotree)
-  ;; (global-set-key [f7] 'neotree-toggle)
-
-  ;; (add-to-list 'auto-mode-alist
-  ;;              '("Capstanfile\\'" . yaml-mode))
-
-  ;;git-emacs
-  ;; (add-to-list 'load-path "/Users/wiggens/.spacemacs.d/layers/git-emacs/")
-  ;; (require 'git-emacs)
 
   (defun indent-buffer ()
     "Indent the whole buffer."
