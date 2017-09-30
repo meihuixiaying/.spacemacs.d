@@ -34,6 +34,7 @@ values."
      ivy
      ranger
      ;; python
+     (better-defaults :variables better-defaults-move-to-end-of-code-first t)
      (syntax-checking :variables syntax-checking-enable-by-default nil
                       syntax-checking-enable-tooltips nil)
      (spacemacs-layouts :variables layouts-enable-autosave nil
