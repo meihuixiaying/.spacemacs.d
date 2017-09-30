@@ -32,30 +32,57 @@ values."
    dotspacemacs-configuration-layers
    '(
      ivy
+     better-defaults
      ranger
-     ;; python
-     (better-defaults :variables better-defaults-move-to-end-of-code-first t)
+     colors
+     prodigy
+     search-engine
+     graphviz
      (syntax-checking :variables syntax-checking-enable-by-default nil
                       syntax-checking-enable-tooltips nil)
+     (spell-checking :variables spell-checking-enable-by-default nil)
+     (vinegar :variables vinegar-reuse-dired-buffer t)
      (spacemacs-layouts :variables layouts-enable-autosave nil
                         layouts-autosave-delay 300)
-
+     (git :variables
+          git-magit-status-fullscreen t
+          magit-push-always-verify nil
+          magit-save-repository-buffers 'dontask
+          magit-revert-buffers 'silent
+          magit-refs-show-commit-count 'all
+          magit-revision-show-gravatars nil)
+     (ibuffer :variables ibuffer-group-buffers-by 'projects)
      (auto-completion :variables auto-completion-enable-sort-by-usage t
                       auto-completion-enable-snippets-in-popup t
-                      :disabled-for markdown)
-     (osx :variables osx-dictionary-dictionary-choice "Simplified Chinese - English")
+                      :disabled-for org markdown)
+     (osx :variables osx-dictionary-dictionary-choice "Simplified Chinese - English"
+          osx-command-as 'super)
      restclient
-     (gtags :disabled-for emacs-lisp javascript python shell-scripts)
+     (gtags :disabled-for clojure emacs-lisp javascript latex python shell-scripts)
      (shell :variables shell-default-shell 'eshell)
+     ;; docker
+     latex
+     deft
+     markdown
+     (org :variables org-want-todo-bindings t)
+     gpu
      yaml
+     react
      (python :variables
              python-test-runner '(nose pytest))
+     ;; (ruby :variables ruby-version-manager 'chruby)
+     ;; ruby-on-rails
+     lua
      html
      javascript
      (typescript :variables
-                 typescript-fmt-on-save nil
-                 typescript-fmt-tool 'typescript-formatter)
+                typescript-fmt-on-save nil
+                typescript-fmt-tool 'typescript-formatter)
      emacs-lisp
+     (clojure :variables clojure-enable-fancify-symbols t)
+     racket
+     (c-c++ :variables
+            c-c++-default-mode-for-headers 'c++-mode)
      zilongshanren
      (chinese :packages youdao-dictionary fcitx
               :variables chinese-enable-fcitx nil
@@ -65,12 +92,11 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(sicp
-                                      vue-mode)
+   dotspacemacs-additional-packages '(sicp)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    dotspacemacs-excluded-packages
-   '(magit-gh-pulls magit-gitflow org-projectile evil-mc
+   '(magit-gh-pulls magit-gitflow org-projectile evil-mc realgud
                     evil-args evil-ediff evil-exchange evil-unimpaired
                     evil-indent-plus volatile-highlights smartparens
                     spaceline holy-mode skewer-mode rainbow-delimiters
@@ -106,8 +132,6 @@ values."
    ;; `--insecure' which forces the value of this variable to nil.
    ;; (default t)
    dotspacemacs-elpa-https t
-   ;; 设置代码行长度为120
-   ;; fill-column 120
    ;; Maximum allowed time in seconds to contact an ELPA repository.
    dotspacemacs-elpa-timeout 5
    ;; If non nil then spacemacs will check for updates at startup
@@ -150,17 +174,17 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   ;; dotspacemacs-themes '(solarized-dark
-   ;;                       solarized-light)
+   dotspacemacs-themes '(solarized-light
+                         solarized-dark)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 12
-                               :weight light
+                               :size 14
+                               :weight normal
                                :width normal
-                               :powerline-scale 0.9)
+                               :powerline-scale 1.1)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
    ;; The key used for Emacs commands (M-x) (after pressing on the leader key).
@@ -279,7 +303,7 @@ values."
    ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
    ;; derivatives. If set to `relative', also turns on relative line numbers.
    ;; (default nil)
-   dotspacemacs-line-numbers t
+   dotspacemacs-line-numbers nil
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
    dotspacemacs-folding-method 'origami
@@ -315,29 +339,30 @@ values."
 
 (defun dotspacemacs/user-init ()
   (setq configuration-layer--elpa-archives
-        '(("melpa-cn" . "https://elpa.zilongshanren.com/melpa/")
-          ("org-cn"   . "https://elpa.zilongshanren.com/org/")
-          ("gnu-cn"   . "https://elpa.zilongshanren.com/gnu/")
-          ("gnu" . "http://elpa.gnu.org/packages/")
-          ("melpa" . "http://melpa.milkbox.net/packages/")))
+        '(("melpa-cn" . "https://elpa.emacs-china.org/melpa/")
+          ("org-cn"   . "https://elpa.emacs-china.org/org/")
+          ("gnu-cn"   . "https://elpa.emacs-china.org/gnu/")))
+
   ;; https://github.com/syl20bnr/spacemacs/issues/2705
   ;; (setq tramp-mode nil)
-  ;; (setq tramp-ssh-controlmaster-options
-  ;; "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
+  (setq tramp-ssh-controlmaster-options
+        "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
 
   ;; ss proxy. But it will cause anacond-mode failed.
-  ;; (setq socks-server '("Default server" "127.0.0.1" 1080 5))
-  ;; (setq evil-shift-round nil)
+  (setq socks-server '("Default server" "127.0.0.1" 1080 5))
+  (setq evil-shift-round nil)
   (setq byte-compile-warnings '(not obsolete))
-  ;; (setq warning-minimum-level :error)
+  (setq warning-minimum-level :error)
   ;; hack for remove purpose mode
   (setq purpose-mode nil)
-  (setq python-shell-interpreter "/usr/bin/python")
-  (when (not package-archive-contents)
-    (package-refresh-contents))
   )
 
 (defun dotspacemacs/user-config ()
+  ;;解决org表格里面中英文对齐的问题
+  (when (configuration-layer/layer-usedp 'chinese)
+    (when (and (spacemacs/system-is-mac) window-system)
+      (spacemacs//set-monospaced-font "Source Code Pro" "Hiragino Sans GB" 14 16)))
+
   ;; Setting Chinese Font
   (when (and (spacemacs/system-is-mswindows) window-system)
     (setq ispell-program-name "aspell")
@@ -346,7 +371,7 @@ values."
     (dolist (charset '(kana han symbol cjk-misc bopomofo))
       (set-fontset-font (frame-parameter nil 'font)
                         charset
-                        (font-spec :family "Menlo, Monaco" :size 12))))
+                        (font-spec :family "Microsoft Yahei" :size 14))))
 
   (fset 'evil-visual-update-x-selection 'ignore)
 
@@ -357,7 +382,9 @@ values."
   (spacemacs|add-company-backends :modes text-mode)
 
   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
-  ;; (add-hook 'after-init-hook #'global-flycheck-mode)
+
+  ;; temp fix for ivy-switch-buffer
+  ;; (spacemacs/set-leader-keys "bb" 'helm-mini)
 
   (global-hungry-delete-mode t)
   (spacemacs|diminish helm-gtags-mode)
@@ -368,46 +395,8 @@ values."
 
   (evilified-state-evilify-map special-mode-map :mode special-mode)
 
-  (setq auto-mode-alist
-        (append
-         '(("\\.vue\\'" . vue-mode)
-           ("Capstanfile\\'" . yaml-mode)
-           ("\\.yml\\'". yaml-mode)
-           )
-         auto-mode-alist))
-
-  (require 'web-beautify)
-
-  (defun web-beautify-when-enter (&optional)
-    " eval web-beautify when type enter "
-    (interactive)
-    (newline-and-indent)
-    (save-excursion
-      (line-move -1)
-      (web-beautify-format-region web-beautify-js-program (line-beginning-position) (line-end-position))))
-  (defun web-beautify-when-branck (&optional)
-    "eval web-beautify when region"
-    (interactive)
-    (insert-char 125)
-    (save-excursion
-      (web-beautify-format-region
-       web-beautify-js-program
-       (scan-lists (point) -1 0)
-       (point)))
-    (forward-list))
-
-  (add-hook 'js2-mode-hook (lambda ()
-                             (local-set-key (kbd "RET") 'web-beautify-when-enter)
-                             (local-set-key (kbd "}") 'web-beautify-when-branck) ))
-
-  (load-file "/Users/wiggens/.spacemacs.d/layers/robot-mode/robot-mode.el")
-  (add-to-list 'auto-mode-alist '("\\.robot\\'" . robot-mode))
-
-  (defun indent-buffer ()
-    "Indent the whole buffer."
-    (interactive)
-    (save-excursion
-      (indent-region (point-min) (point-max) nil)))
+  (add-to-list 'auto-mode-alist
+               '("Capstanfile\\'" . yaml-mode))
 
   (defun js-indent-line ()
     "Indent the current line as JavaScript."
@@ -440,6 +429,8 @@ values."
       (fundamental-mode)))
   (spacemacs/set-leader-keys "otm" 'zilongshanren/toggle-major-mode)
 
+  ;; (add-hook 'text-mode-hook 'spacemacs/toggle-spelling-checking-on)
+
   ;; https://github.com/syl20bnr/spacemacs/issues/7749
   (defun spacemacs/ivy-persp-switch-project (arg)
     (interactive "P")
@@ -454,7 +445,8 @@ values."
                           (let ((projectile-completion-system 'ivy)
                                 (old-default-directory default-directory))
                             (projectile-switch-project-by-name project)
-                            (setq default-directory old-default-directory)))))))
+                            (setq default-directory old-default-directory))))))
+  )
 
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)

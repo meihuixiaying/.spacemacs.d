@@ -20,7 +20,6 @@
         cmake-font-lock
         cmake-mode
         flycheck
-        impatient-mode
         nodejs-repl
         (nodejs-repl-eval :location local)
         js2-mode
@@ -30,25 +29,84 @@
         yasnippet
         web-mode
         js-doc
+        lua-mode
         (cc-mode :location built-in)
+        ;; flycheck-clojure
         etags-select
         (python :location built-in)
         (emacs-lisp :location built-in)
+        ;; clojure-mode
         company
         (eldoc :location built-in)
         dumb-jump
+        graphviz-dot-mode
+        cider
+        ;; editorconfig
+        robe
         ))
 
+(defun zilongshanren-programming/post-init-robe ()
+  (progn
+    (add-hook 'inf-ruby-mode-hook 'spacemacs/toggle-auto-completion-on)
+    (defun zilongshanren/ruby-send-current-line (&optional print)
+      "Send the current line to the inferior Ruby process."
+      (interactive "P")
+      (ruby-send-region
+       (line-beginning-position)
+       (line-end-position))
+      (when print (ruby-print-result)))
+
+    (defun zilongshanren/ruby-send-current-line-and-go ()
+      (interactive)
+      (zilongshanren/ruby-send-current-line)
+      (ruby-switch-to-inf t))
+
+    (defun zilongshanren/start-inf-ruby-and-robe ()
+      (interactive)
+      (when (not (get-buffer "*ruby*"))
+        (inf-ruby))
+      (robe-start))
+
+    (dolist (mode '(ruby-mode enh-ruby-mode))
+      (spacemacs/set-leader-keys-for-major-mode mode
+        "sb" 'ruby-send-block
+        "sB" 'ruby-send-buffer
+        "sl" 'zilongshanren/ruby-send-current-line
+        "sL" 'zilongshanren/ruby-send-current-line-and-go
+        "sI" 'zilongshanren/start-inf-ruby-and-robe))))
 
 (defun zilongshanren-programming/init-editorconfig ()
   (use-package editorconfig
     :init
     (progn
       (defun conditional-enable-editorconfig ()
-        (if (and (zilongshanren/vcs-project-root)
+        (if (and (zilongshanren/git-project-root)
                  (locate-dominating-file default-directory ".editorconfig"))
             (editorconfig-apply)))
       (add-hook 'prog-mode-hook 'conditional-enable-editorconfig))))
+
+(defun zilongshanren-programming/post-init-cider ()
+  (setq cider-cljs-lein-repl
+        "(do (require 'figwheel-sidecar.repl-api)
+           (figwheel-sidecar.repl-api/start-figwheel!)
+           (figwheel-sidecar.repl-api/cljs-repl))")
+
+  (defun zilongshanren/cider-figwheel-repl ()
+    (interactive)
+    (save-some-buffers)
+    (with-current-buffer (cider-current-repl-buffer)
+      (goto-char (point-max))
+      (insert "(require 'figwheel-sidecar.repl-api)
+             (figwheel-sidecar.repl-api/start-figwheel!) ; idempotent
+             (figwheel-sidecar.repl-api/cljs-repl)")
+      (cider-repl-return)))
+
+  (global-set-key (kbd "C-c C-f") #'zilongshanren/cider-figwheel-repl))
+
+(defun zilongshanren-programming/post-init-graphviz-dot-mode ()
+  (with-eval-after-load 'graphviz-dot-mode
+      (require 'company-keywords)
+      (push '(graphviz-dot-mode  "digraph" "node" "shape" "subgraph" "label" "edge" "bgcolor" "style" "record") company-keywords-alist)))
 
 (defun zilongshanren-programming/post-init-dumb-jump ()
   (setq dumb-jump-selector 'ivy)
@@ -75,40 +133,7 @@
         js-doc-url "http://www.zilongshanren.com"
         js-doc-license "MIT")
 
- (defun my-js-doc-insert-function-doc-snippet ()
-    "Insert JsDoc style comment of the function with yasnippet."
-    (interactive)
-
-    (with-eval-after-load 'yasnippet
-      (js-doc--beginning-of-defun)
-
-      (let ((metadata (js-doc--function-doc-metadata))
-            (field-count 1))
-        (yas-expand-snippet
-         (concat
-          js-doc-top-line
-          " * ${1:Function description.}\n"
-          (format "* @method %s\n" (nth-value 1 (split-string (which-function) "\\.")))
-          (mapconcat (lambda (param)
-                       (format
-                        " * @param {${%d:Type of %s}} %s - ${%d:Parameter description.}\n"
-                        (incf field-count)
-                        param
-                        param
-                        (incf field-count)))
-                     (cdr (assoc 'params metadata))
-                     "")
-          (when (assoc 'returns metadata)
-            (format
-             " * @returns {${%d:Return Type}} ${%d:Return description.}\n"
-             (incf field-count)
-             (incf field-count)))
-          (when (assoc 'throws metadata)
-            (format
-             " * @throws {${%d:Exception Type}} ${%d:Exception description.}\n"
-             (incf field-count)
-             (incf field-count)))
-          js-doc-bottom-line))))))
+  )
 
 
 (defun zilongshanren-programming/init-ctags-update ()
@@ -247,19 +272,6 @@
   (setq eldoc-idle-delay 0.4))
 
 
-(defun zilongshanren-programming/init-impatient-mode ()
-  "Initialize impatient mode"
-  (use-package impatient-mode
-    :init
-    (progn
-      (add-hook 'web-mode-hook 'zilongshanren/impatient-mode-hook)
-      (spacemacs/set-leader-keys-for-major-mode 'web-mode
-        "p" 'imp-visit-buffer)
-      )))
-
-
-
-
 (defun zilongshanren-programming/post-init-js2-refactor ()
   (progn
     (spacemacs/set-leader-keys-for-major-mode 'js2-mode
@@ -385,6 +397,24 @@
     :defer t
     ))
 
+(defun zilongshanren-programming/post-init-lua-mode ()
+  (progn
+    (add-hook 'lua-mode-hook 'evil-matchit-mode)
+    ;; (add-hook 'lua-mode-hook 'smartparens-mode)
+    (setq lua-indent-level 2)
+
+    ;; add lua language, basic, string and table keywords.
+    ;; (with-eval-after-load 'lua-mode
+    ;;   (require 'company-keywords)
+    ;;   (push '(lua-mode  "setmetatable" "local" "function" "and" "break" "do" "else" "elseif" "self" "resume" "yield"
+    ;;                     "end" "false" "for" "function" "goto" "if" "nil" "not" "or" "repeat" "return" "then" "true"
+    ;;                     "until" "while" "__index" "dofile" "getmetatable" "ipairs" "pairs" "print" "rawget" "status"
+    ;;                     "rawset" "select" "_G" "assert" "collectgarbage" "error" "pcall" "coroutine"
+    ;;                     "rawequal" "require" "load" "tostring" "tonumber" "xpcall" "gmatch" "gsub"
+    ;;                     "rep" "reverse" "sub" "upper" "concat" "pack" "insert" "remove" "unpack" "sort"
+    ;;                     "lower") company-keywords-alist))
+
+    ))
 
 (defun zilongshanren-programming/post-init-cc-mode ()
   (progn
@@ -507,4 +537,3 @@
     (setq company-c-headers-path-user
           (quote
            ("/Users/guanghui/cocos2d-x/cocos/platform" "/Users/guanghui/cocos2d-x/cocos" "." "/Users/guanghui/cocos2d-x/cocos/audio/include/")))))
-
