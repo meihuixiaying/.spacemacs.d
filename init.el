@@ -44,17 +44,14 @@ values."
                       auto-completion-enable-snippets-in-popup t
                       :disabled-for markdown)
      (osx :variables osx-dictionary-dictionary-choice "Simplified Chinese - English")
-     restclient
      (gtags :disabled-for emacs-lisp javascript python shell-scripts)
      (shell :variables shell-default-shell 'eshell)
      yaml
      (python :variables
-             python-test-runner '(nose pytest))
+             python-test-runner '(nose pytest)
+             python-mode-hook '(flycheck-mode))
      html
      javascript
-     (typescript :variables
-                 typescript-fmt-on-save nil
-                 typescript-fmt-tool 'typescript-formatter)
      emacs-lisp
      zilongshanren
      (chinese :packages youdao-dictionary fcitx
@@ -106,7 +103,6 @@ values."
    ;; `--insecure' which forces the value of this variable to nil.
    ;; (default t)
    dotspacemacs-elpa-https t
-   ;; 设置代码行长度为120
    ;; fill-column 120
    ;; Maximum allowed time in seconds to contact an ELPA repository.
    dotspacemacs-elpa-timeout 5
@@ -150,15 +146,18 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   ;; dotspacemacs-themes '(solarized-dark
-   ;;                       solarized-light)
+   dotspacemacs-themes '(dracula
+                         material
+                         solarized-dark
+                         monokai
+                         solarized-light)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
                                :size 12
-                               :weight light
+                               :weight light 
                                :width normal
                                :powerline-scale 0.9)
    ;; The leader key
@@ -328,6 +327,13 @@ values."
   ;; ss proxy. But it will cause anacond-mode failed.
   ;; (setq socks-server '("Default server" "127.0.0.1" 1080 5))
   ;; (setq evil-shift-round nil)
+  ;; 设置monokai的background
+  ;; (setq
+  ;;  monokai-background     "#000000")
+
+  (setq default-frame-alist
+        '((background-color . "#000000")))
+
   (setq byte-compile-warnings '(not obsolete))
   ;; (setq warning-minimum-level :error)
   ;; hack for remove purpose mode
@@ -337,6 +343,8 @@ values."
     (package-refresh-contents))
   )
 
+;; 设置代码行长度为120
+(setq-default flycheck-flake8-maximum-line-length 120)
 (defun dotspacemacs/user-config ()
   ;; Setting Chinese Font
   (when (and (spacemacs/system-is-mswindows) window-system)
@@ -346,7 +354,7 @@ values."
     (dolist (charset '(kana han symbol cjk-misc bopomofo))
       (set-fontset-font (frame-parameter nil 'font)
                         charset
-                        (font-spec :family "Menlo, Monaco" :size 12))))
+                        (font-spec :family "Menlo, Monaco, 'Courier New', monospace" :size 12 :weight light))))
 
   (fset 'evil-visual-update-x-selection 'ignore)
 
@@ -372,7 +380,8 @@ values."
         (append
          '(("\\.vue\\'" . vue-mode)
            ("Capstanfile\\'" . yaml-mode)
-           ("\\.yml\\'". yaml-mode)
+           ("\\.yml\\'" . yaml-mode)
+           ("\\.py\\'" . python-mode)
            )
          auto-mode-alist))
 
@@ -399,6 +408,7 @@ values."
   (add-hook 'js2-mode-hook (lambda ()
                              (local-set-key (kbd "RET") 'web-beautify-when-enter)
                              (local-set-key (kbd "}") 'web-beautify-when-branck) ))
+
 
   (load-file "/Users/wiggens/.spacemacs.d/layers/robot-mode/robot-mode.el")
   (add-to-list 'auto-mode-alist '("\\.robot\\'" . robot-mode))

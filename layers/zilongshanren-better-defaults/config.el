@@ -44,9 +44,6 @@
                      ruby-mode
                      rspec-mode
                      python-mode
-                     c-mode
-                     c++-mode
-                     objc-mode
                      latex-mode
                      js-mode
                      plain-tex-mode))
