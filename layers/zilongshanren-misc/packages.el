@@ -20,18 +20,10 @@
         avy
         persp-mode
         helm
-        ;; smartparens
-        ;; flyspell-correct
         peep-dired
-        ;; markdown-mode
         swiper
-        ;; magit
-        ;; git-messenger
-        ;; gist
         hydra
-        ;; wrap-region
         helm-ag
-        ;; ranger
         golden-ratio
         (highlight-global :location (recipe :fetcher github :repo "glen-dai/highlight-global"))
         ))
@@ -55,32 +47,6 @@
     (dolist (n '("COMMIT_EDITMSG"))
       (add-to-list 'golden-ratio-exclude-buffer-names n))))
 
-(defun zilongshanren-misc/post-init-ranger ()
-  ;; https://emacs-china.org/t/ranger-golden-ratio/964/2
-  (defun my-ranger ()
-    (interactive)
-    (if golden-ratio-mode
-        (progn
-          (golden-ratio-mode -1)
-          (ranger)
-          (setq golden-ratio-previous-enable t))
-      (progn
-        (ranger)
-        (setq golden-ratio-previous-enable nil))))
-
-  (defun my-quit-ranger ()
-    (interactive)
-    (if golden-ratio-previous-enable
-        (progn
-          (ranger-close)
-          (golden-ratio-mode 1))
-      (ranger-close)))
-
-  (with-eval-after-load 'ranger
-    (progn
-      (define-key ranger-normal-mode-map (kbd "q") 'my-quit-ranger)))
-
-  (spacemacs/set-leader-keys "ar" 'my-ranger))
 
 ;; copy from spacemacs helm layer
 (defun zilongshanren-misc/init-helm-ag ()
@@ -450,41 +416,6 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
 
     ))
 
-(defun zilongshanren-misc/post-init-gist ()
-  (use-package gist
-    :defer t
-    :init
-    (setq gist-list-format
-          '((files "File" 30 nil "%s")
-            (id "Id" 10 nil identity)
-            (created "Created" 20 nil "%D %R")
-            (visibility "Visibility" 10 nil
-                        (lambda
-                          (public)
-                          (or
-                           (and public "public")
-                           "private")))
-            (description "Description" 0 nil identity)))
-    :config
-    (progn
-      (spacemacs|define-transient-state gist-list-mode
-        :title "Gist-mode Transient State"
-        :bindings
-        ("k" gist-kill-current "delete gist")
-        ("e" gist-edit-current-description "edit gist title")
-        ("+" gist-add-buffer "add a file")
-        ("-" gist-remove-file "delete a file")
-        ("y" gist-print-current-url "print url")
-        ("b" gist-browse-current-url "browse gist in browser")
-        ("*" gist-star "star gist")
-        ("^" gist-unstar "unstar gist")
-        ("f" gist-fork "fork gist")
-        ("q" nil "quit" :exit t)
-        ("<escape>" nil nil :exit t))
-      (spacemacs/set-leader-keys-for-major-mode 'gist-list-mode
-        "." 'spacemacs/gist-list-mode-transient-state/body))
-    ))
-
 (defun zilongshanren-misc/init-peep-dired ()
   ;;preview files in dired
   (use-package peep-dired
@@ -494,28 +425,6 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
     :bind (:map dired-mode-map
                 ("P" . peep-dired))))
 
-
-(defun zilongshanren-misc/post-init-flyspell-correct ()
-  (progn
-    (with-eval-after-load 'flyspell
-      (define-key flyspell-mode-map (kbd "C-;") 'flyspell-correct-previous-word-generic))
-    (setq flyspell-correct-interface 'flyspell-correct-ivy)))
-
-(defun zilongshanren-misc/post-init-smartparens ()
-  (use-package smartparens
-    :defer t
-    :init
-    (progn
-      (global-set-key (kbd "C-(") 'wrap-sexp-with-new-round-parens))
-    :config
-    (progn
-      (setq sp-highlight-pair-overlay nil)
-
-      (evil-define-key 'normal sp-keymap
-        (kbd ")>") 'sp-forward-slurp-sexp
-        (kbd ")<") 'sp-forward-barf-sexp
-        (kbd "(>") 'sp-backward-barf-sexp
-        (kbd "(<") 'sp-backward-slurp-sexp))))
 
 (defun zilongshanren-misc/post-init-helm ()
   (with-eval-after-load 'helm
@@ -996,8 +905,6 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
     :config
     (spacemacs|hide-lighter wrap-region-mode)))
 
-
-
 (defun zilongshanren-misc/init-keyfreq ()
   (use-package keyfreq
     :init
@@ -1050,58 +957,3 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
         (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)))
 
     (define-key global-map (kbd "C-s") 'my-swiper-search)))
-
-
-(defun zilongshanren-misc/post-init-magit ()
-  (progn
-    (with-eval-after-load 'magit
-      (progn
-
-        (add-to-list 'magit-no-confirm 'stage-all-changes)
-        (define-key magit-log-mode-map (kbd "W") 'magit-copy-section-value)
-        (define-key magit-status-mode-map (kbd "s-1") 'magit-jump-to-unstaged)
-        (define-key magit-status-mode-map (kbd "s-2") 'magit-jump-to-untracked)
-        (define-key magit-status-mode-map (kbd "s-3") 'magit-jump-to-staged)
-        (define-key magit-status-mode-map (kbd "s-4") 'magit-jump-to-stashes)
-        (setq magit-completing-read-function 'magit-builtin-completing-read)
-
-        (magit-define-popup-switch 'magit-push-popup ?u
-          "Set upstream" "--set-upstream")
-        ))
-
-    ;; prefer two way ediff
-    (setq magit-ediff-dwim-show-on-hunks t)
-
-    (setq magit-repository-directories '("~/cocos2d-x/"))
-    (setq magit-push-always-verify nil)
-
-    (eval-after-load 'magit
-      '(define-key magit-mode-map (kbd "C-c g")
-         #'zilongshanren/magit-visit-pull-request))
-
-    (setq magit-process-popup-time 10)))
-
-(defun zilongshanren-misc/post-init-git-messenger ()
-  (use-package git-messenger
-    :defer t
-    :config
-    (progn
-      (define-key git-messenger-map (kbd "f") 'zilong/github-browse-commit))))
-
-(defun zilongshanren-misc/post-init-markdown-mode ()
-  (progn
-    (add-to-list 'auto-mode-alist '("\\.mdown\\'" . markdown-mode))
-
-    (with-eval-after-load 'markdown-mode
-      (progn
-        ;; (when (configuration-layer/package-usedp 'company)
-        ;;   (spacemacs|add-company-hook markdown-mode))
-
-        (spacemacs/set-leader-keys-for-major-mode 'gfm-mode-map
-          "p" 'zilongshanren/markdown-to-html)
-        (spacemacs/set-leader-keys-for-major-mode 'markdown-mode
-          "p" 'zilongshanren/markdown-to-html)
-
-        (evil-define-key 'normal markdown-mode-map (kbd "TAB") 'markdown-cycle)
-        ))
-    ))
