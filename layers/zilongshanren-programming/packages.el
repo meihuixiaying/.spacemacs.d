@@ -22,11 +22,11 @@
         flycheck
         impatient-mode
         ;; nodejs-repl
-        (nodejs-repl-eval :location local)
+        ;; (nodejs-repl-eval :location local)
         ;; js2-mode
         ;; js2-refactor
-        ;; json-mode
-        racket-mode
+        json-mode
+        ;; racket-mode
         yasnippet
         web-mode
         ;; js-doc
@@ -69,46 +69,46 @@
   ;; if you use pyton3, then you could comment the following line
   (setq python-shell-interpreter "python"))
 
-(defun zilongshanren-programming/post-init-js-doc ()
-  (setq js-doc-mail-address "guanghui8827@gmail.com"
-        js-doc-author (format "Guanghui Qu <%s>" js-doc-mail-address)
-        js-doc-url "http://www.zilongshanren.com"
-        js-doc-license "MIT")
+;; (defun zilongshanren-programming/post-init-js-doc ()
+;;   (setq js-doc-mail-address "guanghui8827@gmail.com"
+;;         js-doc-author (format "Guanghui Qu <%s>" js-doc-mail-address)
+;;         js-doc-url "http://www.zilongshanren.com"
+;;         js-doc-license "MIT")
 
- (defun my-js-doc-insert-function-doc-snippet ()
-    "Insert JsDoc style comment of the function with yasnippet."
-    (interactive)
+;;  (defun my-js-doc-insert-function-doc-snippet ()
+;;     "Insert JsDoc style comment of the function with yasnippet."
+;;     (interactive)
 
-    (with-eval-after-load 'yasnippet
-      (js-doc--beginning-of-defun)
+;;     (with-eval-after-load 'yasnippet
+;;       (js-doc--beginning-of-defun)
 
-      (let ((metadata (js-doc--function-doc-metadata))
-            (field-count 1))
-        (yas-expand-snippet
-         (concat
-          js-doc-top-line
-          " * ${1:Function description.}\n"
-          (format "* @method %s\n" (nth-value 1 (split-string (which-function) "\\.")))
-          (mapconcat (lambda (param)
-                       (format
-                        " * @param {${%d:Type of %s}} %s - ${%d:Parameter description.}\n"
-                        (incf field-count)
-                        param
-                        param
-                        (incf field-count)))
-                     (cdr (assoc 'params metadata))
-                     "")
-          (when (assoc 'returns metadata)
-            (format
-             " * @returns {${%d:Return Type}} ${%d:Return description.}\n"
-             (incf field-count)
-             (incf field-count)))
-          (when (assoc 'throws metadata)
-            (format
-             " * @throws {${%d:Exception Type}} ${%d:Exception description.}\n"
-             (incf field-count)
-             (incf field-count)))
-          js-doc-bottom-line))))))
+;;       (let ((metadata (js-doc--function-doc-metadata))
+;;             (field-count 1))
+;;         (yas-expand-snippet
+;;          (concat
+;;           js-doc-top-line
+;;           " * ${1:Function description.}\n"
+;;           (format "* @method %s\n" (nth-value 1 (split-string (which-function) "\\.")))
+;;           (mapconcat (lambda (param)
+;;                        (format
+;;                         " * @param {${%d:Type of %s}} %s - ${%d:Parameter description.}\n"
+;;                         (incf field-count)
+;;                         param
+;;                         param
+;;                         (incf field-count)))
+;;                      (cdr (assoc 'params metadata))
+;;                      "")
+;;           (when (assoc 'returns metadata)
+;;             (format
+;;              " * @returns {${%d:Return Type}} ${%d:Return description.}\n"
+;;              (incf field-count)
+;;              (incf field-count)))
+;;           (when (assoc 'throws metadata)
+;;             (format
+;;              " * @throws {${%d:Exception Type}} ${%d:Exception description.}\n"
+;;              (incf field-count)
+;;              (incf field-count)))
+;;           js-doc-bottom-line))))))
 
 
 (defun zilongshanren-programming/init-ctags-update ()
@@ -159,17 +159,17 @@
                                                             org-mode-hook))
     ))
 
-(defun zilongshanren-programming/post-init-racket-mode ()
-  (progn
-    (eval-after-load 'racket-repl-mode
-      '(progn
-         (define-key racket-repl-mode-map (kbd "]") nil)
-         (define-key racket-repl-mode-map (kbd "[") nil)))
+;; (defun zilongshanren-programming/post-init-racket-mode ()
+;;   (progn
+;;     (eval-after-load 'racket-repl-mode
+;;       '(progn
+;;          (define-key racket-repl-mode-map (kbd "]") nil)
+;;          (define-key racket-repl-mode-map (kbd "[") nil)))
 
-    (add-hook 'racket-mode-hook #'(lambda () (lispy-mode 1)))
-    (add-hook 'racket-repl-mode-hook #'(lambda () (lispy-mode t)))
-    ;; (add-hook 'racket-repl-mode-hook #'(lambda () (smartparens-mode t)))
-    ))
+;;     (add-hook 'racket-mode-hook #'(lambda () (lispy-mode 1)))
+;;     (add-hook 'racket-repl-mode-hook #'(lambda () (lispy-mode t)))
+;;     ;; (add-hook 'racket-repl-mode-hook #'(lambda () (smartparens-mode t)))
+;;     ))
 
 (defun zilongshanren-programming/post-init-json-mode ()
   (add-to-list 'auto-mode-alist '("\\.tern-project\\'" . json-mode))
@@ -179,10 +179,10 @@
     "ti" 'my-toggle-web-indent))
 
 
-(defun zilongshanren-programming/init-nodejs-repl ()
-  (use-package nodejs-repl
-    :init
-    :defer t))
+;; (defun zilongshanren-programming/init-nodejs-repl ()
+;;   (use-package nodejs-repl
+;;     :init
+;;     :defer t))
 
 (defun zilongshanren-programming/init-flycheck-package ()
   (use-package flycheck-package))
@@ -223,13 +223,13 @@
   (use-package google-c-style
     :init (add-hook 'c-mode-common-hook 'google-set-c-style)))
 
-(defun zilongshanren-programming/post-init-cmake-mode ()
-  (progn
-    (spacemacs/declare-prefix-for-mode 'cmake-mode
-                                       "mh" "docs")
-    (spacemacs/set-leader-keys-for-major-mode 'cmake-mode
-      "hd" 'cmake-help)
-    (add-hook 'cmake-mode-hook (function cmake-rename-buffer))))
+;; (defun zilongshanren-programming/post-init-cmake-mode ()
+;;   (progn
+;;     (spacemacs/declare-prefix-for-mode 'cmake-mode
+;;                                        "mh" "docs")
+;;     (spacemacs/set-leader-keys-for-major-mode 'cmake-mode
+;;       "hd" 'cmake-help)
+;;     (add-hook 'cmake-mode-hook (function cmake-rename-buffer))))
 
 
 (defun zilongshanren-programming/post-init-flycheck ()
@@ -256,100 +256,100 @@
 
 
 
-(defun zilongshanren-programming/post-init-js2-refactor ()
-  (progn
-    (spacemacs/set-leader-keys-for-major-mode 'js2-mode
-      "r>" 'js2r-forward-slurp
-      "r<" 'js2r-forward-barf)))
+;; (defun zilongshanren-programming/post-init-js2-refactor ()
+;;   (progn
+;;     (spacemacs/set-leader-keys-for-major-mode 'js2-mode
+;;       "r>" 'js2r-forward-slurp
+;;       "r<" 'js2r-forward-barf)))
 
-(defun zilongshanren-programming/post-init-js2-mode ()
-  (progn
-    (add-hook 'js2-mode-hook 'my-setup-develop-environment)
-    (add-hook 'web-mode-hook 'my-setup-develop-environment)
+;; (defun zilongshanren-programming/post-init-js2-mode ()
+;;   (progn
+;;     (add-hook 'js2-mode-hook 'my-setup-develop-environment)
+;;     (add-hook 'web-mode-hook 'my-setup-develop-environment)
 
-    (spacemacs|define-jump-handlers js2-mode)
-    (add-hook 'spacemacs-jump-handlers-js2-mode 'etags-select-find-tag-at-point)
+;;     (spacemacs|define-jump-handlers js2-mode)
+;;     (add-hook 'spacemacs-jump-handlers-js2-mode 'etags-select-find-tag-at-point)
 
-    (setq company-backends-js2-mode '((company-dabbrev-code :with company-keywords company-etags)
-                                      company-files company-dabbrev))
+;;     (setq company-backends-js2-mode '((company-dabbrev-code :with company-keywords company-etags)
+;;                                       company-files company-dabbrev))
 
-    (zilongshanren|toggle-company-backends company-tern)
+;;     (zilongshanren|toggle-company-backends company-tern)
 
-    (spacemacs/set-leader-keys-for-major-mode 'js2-mode
-      "tb" 'zilong/company-toggle-company-tern)
+;;     (spacemacs/set-leader-keys-for-major-mode 'js2-mode
+;;       "tb" 'zilong/company-toggle-company-tern)
 
-    (add-hook 'js2-mode-hook 'my-js2-mode-hook)
+;;     (add-hook 'js2-mode-hook 'my-js2-mode-hook)
 
-    ;; add your own keywords highlight here
-    (font-lock-add-keywords 'js2-mode
-                            '(("\\<\\(cc\\)\\>" 1 font-lock-type-face)))
+;;     ;; add your own keywords highlight here
+;;     (font-lock-add-keywords 'js2-mode
+;;                             '(("\\<\\(cc\\)\\>" 1 font-lock-type-face)))
 
-    (spacemacs/declare-prefix-for-mode 'js2-mode "ms" "repl")
+;;     (spacemacs/declare-prefix-for-mode 'js2-mode "ms" "repl")
 
-    (with-eval-after-load 'js2-mode
-      (progn
-        ;; these mode related variables must be in eval-after-load
-        ;; https://github.com/magnars/.emacs.d/blob/master/settings/setup-js2-mode.el
-        (setq-default js2-allow-rhino-new-expr-initializer nil)
-        (setq-default js2-auto-indent-p nil)
-        (setq-default js2-enter-indents-newline nil)
-        (setq-default js2-global-externs '("module" "ccui" "require" "buster" "sinon" "assert" "refute" "setTimeout" "clearTimeout" "setInterval" "clearInterval" "location" "__dirname" "console" "JSON"))
-        (setq-default js2-idle-timer-delay 0.2)
-        (setq-default js2-mirror-mode nil)
-        (setq-default js2-strict-inconsistent-return-warning nil)
-        (setq-default js2-include-rhino-externs nil)
-        (setq-default js2-include-gears-externs nil)
-        (setq-default js2-concat-multiline-strings 'eol)
-        (setq-default js2-rebind-eol-bol-keys nil)
-        (setq-default js2-auto-indent-p t)
+;;     (with-eval-after-load 'js2-mode
+;;       (progn
+;;         ;; these mode related variables must be in eval-after-load
+;;         ;; https://github.com/magnars/.emacs.d/blob/master/settings/setup-js2-mode.el
+;;         (setq-default js2-allow-rhino-new-expr-initializer nil)
+;;         (setq-default js2-auto-indent-p nil)
+;;         (setq-default js2-enter-indents-newline nil)
+;;         (setq-default js2-global-externs '("module" "ccui" "require" "buster" "sinon" "assert" "refute" "setTimeout" "clearTimeout" "setInterval" "clearInterval" "location" "__dirname" "console" "JSON"))
+;;         (setq-default js2-idle-timer-delay 0.2)
+;;         (setq-default js2-mirror-mode nil)
+;;         (setq-default js2-strict-inconsistent-return-warning nil)
+;;         (setq-default js2-include-rhino-externs nil)
+;;         (setq-default js2-include-gears-externs nil)
+;;         (setq-default js2-concat-multiline-strings 'eol)
+;;         (setq-default js2-rebind-eol-bol-keys nil)
+;;         (setq-default js2-auto-indent-p t)
 
-        (setq-default js2-bounce-indent nil)
-        (setq-default js-indent-level 4)
-        (setq-default js2-basic-offset 4)
-        (setq-default js-switch-indent-offset 4)
-        ;; Let flycheck handle parse errors
-        (setq-default js2-mode-show-parse-errors nil)
-        (setq-default js2-mode-show-strict-warnings nil)
-        (setq-default js2-highlight-external-variables t)
-        (setq-default js2-strict-trailing-comma-warning nil)
+;;         (setq-default js2-bounce-indent nil)
+;;         (setq-default js-indent-level 4)
+;;         (setq-default js2-basic-offset 4)
+;;         (setq-default js-switch-indent-offset 4)
+;;         ;; Let flycheck handle parse errors
+;;         (setq-default js2-mode-show-parse-errors nil)
+;;         (setq-default js2-mode-show-strict-warnings nil)
+;;         (setq-default js2-highlight-external-variables t)
+;;         (setq-default js2-strict-trailing-comma-warning nil)
 
-        (add-hook 'web-mode-hook 'my-web-mode-indent-setup)
+;;         (add-hook 'web-mode-hook 'my-web-mode-indent-setup)
 
-        (spacemacs/set-leader-keys-for-major-mode 'js2-mode
-          "ti" 'my-toggle-web-indent)
-        (spacemacs/set-leader-keys-for-major-mode 'js-mode
-          "ti" 'my-toggle-web-indent)
-        (spacemacs/set-leader-keys-for-major-mode 'web-mode
-          "ti" 'my-toggle-web-indent)
-        (spacemacs/set-leader-keys-for-major-mode 'css-mode
-          "ti" 'my-toggle-web-indent)
+;;         (spacemacs/set-leader-keys-for-major-mode 'js2-mode
+;;           "ti" 'my-toggle-web-indent)
+;;         (spacemacs/set-leader-keys-for-major-mode 'js-mode
+;;           "ti" 'my-toggle-web-indent)
+;;         (spacemacs/set-leader-keys-for-major-mode 'web-mode
+;;           "ti" 'my-toggle-web-indent)
+;;         ;; (spacemacs/set-leader-keys-for-major-mode 'css-mode
+;;         ;;   "ti" 'my-toggle-web-indent)
 
-        (spacemacs/declare-prefix-for-mode 'js2-mode "mt" "toggle")
-        (spacemacs/declare-prefix-for-mode 'js-mode "mt" "toggle")
-        (spacemacs/declare-prefix-for-mode 'web-mode "mt" "toggle")
-        (spacemacs/declare-prefix-for-mode 'css-mode "mt" "toggle")
+;;         (spacemacs/declare-prefix-for-mode 'js2-mode "mt" "toggle")
+;;         (spacemacs/declare-prefix-for-mode 'js-mode "mt" "toggle")
+;;         (spacemacs/declare-prefix-for-mode 'web-mode "mt" "toggle")
+;;         ;; (spacemacs/declare-prefix-for-mode 'css-mode "mt" "toggle")
 
 
-        (eval-after-load 'tern-mode
-          '(spacemacs|hide-lighter tern-mode))
-        ))
+;;         (eval-after-load 'tern-mode
+;;           '(spacemacs|hide-lighter tern-mode))
+;;         ))
 
-    (evilified-state-evilify js2-error-buffer-mode js2-error-buffer-mode-map)
+;;     (evilified-state-evilify js2-error-buffer-mode js2-error-buffer-mode-map)
 
-    ))
+;;     ))
 
-(defun zilongshanren-programming/post-init-css-mode ()
-  (progn
-    (dolist (hook '(css-mode-hook sass-mode-hook less-mode-hook))
-      (add-hook hook 'rainbow-mode))
+;; (defun zilongshanren-programming/post-init-css-mode ()
+;;   (progn
+;;     (dolist (hook '(css-mode-hook sass-mode-hook less-mode-hook))
+;;       (add-hook hook 'rainbow-mode))
 
-    (defun css-imenu-make-index ()
-      (save-excursion
-        (imenu--generic-function '((nil "^ *\\([^ ]+\\) *{ *$" 1)))))
+;;     (defun css-imenu-make-index ()
+;;       (save-excursion
+;;         (imenu--generic-function '((nil "^ *\\([^ ]+\\) *{ *$" 1)))))
 
-    (add-hook 'css-mode-hook
-              (lambda ()
-                (setq imenu-create-index-function 'css-imenu-make-index)))))
+;;     (add-hook 'css-mode-hook
+;;               (lambda ()
+;;                 (setq imenu-create-index-function 'css-imenu-make-index)))))
 
 (defun zilongshanren-programming/post-init-tagedit ()
   (add-hook 'web-mode-hook (lambda () (tagedit-mode 1))))
@@ -367,55 +367,55 @@
       (spacemacs|hide-lighter doxymacs-mode))))
 
 ;; https://atlanis.net/blog/posts/nodejs-repl-eval.html
-(defun zilongshanren-programming/init-nodejs-repl-eval ()
-  (use-package nodejs-repl-eval
-    :commands (nodejs-repl-eval-buffer nodejs-repl-eval-dwim nodejs-repl-eval-function)
-    :init
-    (progn
-      (spacemacs/declare-prefix-for-mode 'js2-mode
-                                         "ms" "REPL")
-      (spacemacs/set-leader-keys-for-major-mode 'js2-mode
-        "sb" 'nodejs-repl-eval-buffer
-        "sf" 'nodejs-repl-eval-function
-        "sd" 'nodejs-repl-eval-dwim))
-    :defer t
-    ))
+;; (defun zilongshanren-programming/init-nodejs-repl-eval ()
+;;   (use-package nodejs-repl-eval
+;;     :commands (nodejs-repl-eval-buffer nodejs-repl-eval-dwim nodejs-repl-eval-function)
+;;     :init
+;;     (progn
+;;       (spacemacs/declare-prefix-for-mode 'js2-mode
+;;                                          "ms" "REPL")
+;;       (spacemacs/set-leader-keys-for-major-mode 'js2-mode
+;;         "sb" 'nodejs-repl-eval-buffer
+;;         "sf" 'nodejs-repl-eval-function
+;;         "sd" 'nodejs-repl-eval-dwim))
+;;     :defer t
+;;     ))
 
 
-(defun zilongshanren-programming/post-init-cc-mode ()
-  (progn
-    (setq company-backends-c-mode-common '((company-dabbrev-code :with company-keywords company-gtags company-etags)
-                                           company-files company-dabbrev))
-    (spacemacs/set-leader-keys-for-major-mode 'c++-mode
-      "gd" 'etags-select-find-tag-at-point)
+;; (defun zilongshanren-programming/post-init-cc-mode ()
+;;   (progn
+;;     (setq company-backends-c-mode-common '((company-dabbrev-code :with company-keywords company-gtags company-etags)
+;;                                            company-files company-dabbrev))
+;;     (spacemacs/set-leader-keys-for-major-mode 'c++-mode
+;;       "gd" 'etags-select-find-tag-at-point)
 
 
-    (add-hook 'c++-mode-hook 'my-setup-develop-environment)
-    (add-hook 'c-mode-hook 'my-setup-develop-environment)
+;;     (add-hook 'c++-mode-hook 'my-setup-develop-environment)
+;;     (add-hook 'c-mode-hook 'my-setup-develop-environment)
 
 
-    ;; http://stackoverflow.com/questions/23553881/emacs-indenting-of-c11-lambda-functions-cc-mode
-    (defadvice c-lineup-arglist (around my activate)
-      "Improve indentation of continued C++11 lambda function opened as argument."
-      (setq ad-return-value
-            (if (and (equal major-mode 'c++-mode)
-                     (ignore-errors
-                       (save-excursion
-                         (goto-char (c-langelem-pos langelem))
-                         ;; Detect "[...](" or "[...]{". preceded by "," or "(",
-                         ;;   and with unclosed brace.
-                         (looking-at ".*[(,][ \t]*\\[[^]]*\\][ \t]*[({][^}]*$"))))
-                0                       ; no additional indent
-              ad-do-it)))               ; default behavior
+;;     ;; http://stackoverflow.com/questions/23553881/emacs-indenting-of-c11-lambda-functions-cc-mode
+;;     (defadvice c-lineup-arglist (around my activate)
+;;       "Improve indentation of continued C++11 lambda function opened as argument."
+;;       (setq ad-return-value
+;;             (if (and (equal major-mode 'c++-mode)
+;;                      (ignore-errors
+;;                        (save-excursion
+;;                          (goto-char (c-langelem-pos langelem))
+;;                          ;; Detect "[...](" or "[...]{". preceded by "," or "(",
+;;                          ;;   and with unclosed brace.
+;;                          (looking-at ".*[(,][ \t]*\\[[^]]*\\][ \t]*[({][^}]*$"))))
+;;                 0                       ; no additional indent
+;;               ad-do-it)))               ; default behavior
 
 
-    (setq c-default-style "linux") ;; set style to "linux"
-    (setq c-basic-offset 4)
-    (c-set-offset 'substatement-open 0)
-    (with-eval-after-load 'c++-mode
-      (define-key c++-mode-map (kbd "s-.") 'company-ycmd)))
+;;     (setq c-default-style "linux") ;; set style to "linux"
+;;     (setq c-basic-offset 4)
+;;     (c-set-offset 'substatement-open 0)
+;;     (with-eval-after-load 'c++-mode
+;;       (define-key c++-mode-map (kbd "s-.") 'company-ycmd)))
 
-  )
+;;   )
 
 (defun zilongshanren-programming/init-flycheck-clojure ()
   (use-package flycheck-clojure
@@ -444,21 +444,21 @@
       "tb" 'zilong/company-toggle-company-ycmd)))
 
 ;; when many project has the need to use tags, I will give etags-table and etags-update a try
-(defun zilongshanren-programming/init-etags-select ()
-  (use-package etags-select
-    :init
-    (progn
-      (define-key evil-normal-state-map (kbd "gf")
-        (lambda () (interactive) (find-tag (find-tag-default-as-regexp))))
+;; (defun zilongshanren-programming/init-etags-select ()
+;;   (use-package etags-select
+;;     :init
+;;     (progn
+;;       (define-key evil-normal-state-map (kbd "gf")
+;;         (lambda () (interactive) (find-tag (find-tag-default-as-regexp))))
 
-      (define-key evil-normal-state-map (kbd "gb") 'pop-tag-mark)
+;;       (define-key evil-normal-state-map (kbd "gb") 'pop-tag-mark)
 
-      (define-key evil-normal-state-map (kbd "gn")
-        (lambda () (interactive) (find-tag last-tag t)))
+;;       (define-key evil-normal-state-map (kbd "gn")
+;;         (lambda () (interactive) (find-tag last-tag t)))
 
-      (evilified-state-evilify etags-select-mode etags-select-mode-map)
-      (spacemacs/set-leader-keys-for-major-mode 'js2-mode
-        "gd" 'etags-select-find-tag-at-point))))
+;;       (evilified-state-evilify etags-select-mode etags-select-mode-map)
+;;       (spacemacs/set-leader-keys-for-major-mode 'js2-mode
+;;         "gd" 'etags-select-find-tag-at-point))))
 
 (defun zilongshanren-programming/init-gulpjs ()
   (use-package gulpjs
