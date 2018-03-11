@@ -326,7 +326,7 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
-   (setq configuration-layer--elpa-archives
+  (setq configuration-layer--elpa-archives
         '(("melpa-cn" . "https://elpa.zilongshanren.com/melpa/")
           ("org-cn"   . "https://elpa.zilongshanren.com/org/")
           ("gnu-cn"   . "https://elpa.zilongshanren.com/gnu/")
@@ -358,22 +358,26 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
 (setq-default flycheck-flake8-maximum-line-length 120)
 (defun dotspacemacs/user-config ()
-    ;; 设置代码行长度为120
-   (setq-default flycheck-flake8-maximum-line-length 120)
-   (fset 'evil-visual-update-x-selection 'ignore)
-   ;;force horizontal split window
-   (setq split-width-threshold 120)
-   (linum-relative-on)
-   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
-   (global-hungry-delete-mode t)
-   (spacemacs|diminish helm-gtags-mode)
-   (spacemacs|diminish ggtags-mode)
-   (spacemacs|diminish which-key-mode)
-   (spacemacs|diminish spacemacs-whitespace-cleanup-mode)
-   (spacemacs|diminish counsel-mode)
+  (require 'golden-ratio)
+  (golden-ratio-mode 1)
+  (setq golden-ratio-auto-scale t)
 
-   (evilified-state-evilify-map special-mode-map :mode special-mode)
-   (setq auto-mode-alist
+    ;; 设置代码行长度为120
+  (setq-default flycheck-flake8-maximum-line-length 120)
+  (fset 'evil-visual-update-x-selection 'ignore)
+  ;;force horizontal split window
+  (setq split-width-threshold 120)
+  (linum-relative-on)
+  (add-hook 'doc-view-mode-hook 'auto-revert-mode)
+  (global-hungry-delete-mode t)
+  (spacemacs|diminish helm-gtags-mode)
+  (spacemacs|diminish ggtags-mode)
+  (spacemacs|diminish which-key-mode)
+  (spacemacs|diminish spacemacs-whitespace-cleanup-mode)
+  (spacemacs|diminish counsel-mode)
+
+  (evilified-state-evilify-map special-mode-map :mode special-mode)
+  (setq auto-mode-alist
          (append
           '(("Capstanfile\\'" . yaml-mode)
             ("\\.yml\\'" . yaml-mode)
