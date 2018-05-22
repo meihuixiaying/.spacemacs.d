@@ -16,7 +16,8 @@ values."
    ;; and `nil'. `unused' will lazy install only unused layers (i.e. layers
    ;; not listed in variable `dotspacemacs-configuration-layers'), `all' will
    ;; lazy install any layer that support lazy installation even the layers
-   ;; listed in `dotspacemacs-configuration-layers'. `nil' disable the lazyError (use-package): info+/:init: Cannot open load file: No such file or directory, info+
+   ;; listed in `dotspacemacs-configuration-layers'. `nil' disable the lazyError (
+   ;; gouse-package): info+/:init: Cannot open load file: No such file or directory, info+
 
    ;; installation feature and you have to explicitly list a layer in the
    ;; variable `dotspacemacs-configuration-layers' to install it.
@@ -158,7 +159,7 @@ values."
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 12
+                               :size 14
                                :weight light 
                                :width normal
                                :powerline-scale 0.9)
@@ -358,9 +359,17 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
 (setq-default flycheck-flake8-maximum-line-length 120)
 (defun dotspacemacs/user-config ()
+
+  ;; 虚拟环境： virtualenvwrapper
+  ;; (load-file "~/.spacemacs.d/layers/zilongshanren-misc/virtualenvwrapper.el")
+  ;; (require 'virtualenvwrapper)
+  ;; (venv-initialize-interactive-shells)
+  ;; (venv-initialize-eshell)
+  ;; (setq venv-location "~/Envs/")
+  ;; (add-to-list 'load-path "~/.spacemacs.d/layers/zilongshanren-misc/virtualenvwrapper.el")
   (require 'golden-ratio)
   (golden-ratio-mode 1)
-  (setq golden-ratio-auto-scale t)
+  ;;(setq golden-ratio-auto-scale t)
 
     ;; 设置代码行长度为120
   (setq-default flycheck-flake8-maximum-line-length 120)
