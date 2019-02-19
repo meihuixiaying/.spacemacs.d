@@ -378,6 +378,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq split-width-threshold 120)
   (linum-relative-on)
   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
+  (add-hook 'python-mode-hook 'flycheck-mode)
   (global-hungry-delete-mode t)
   (spacemacs|diminish helm-gtags-mode)
   (spacemacs|diminish ggtags-mode)
