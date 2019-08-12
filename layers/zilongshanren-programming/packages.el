@@ -17,7 +17,6 @@
         flycheck
         yasnippet
         (python :location built-in)
-        ;; (emacs-lisp :location built-in)
         company
         dumb-jump
         ))
@@ -43,9 +42,6 @@
 
 (defun zilongshanren-programming/post-init-clojure-mode ()
   )
-
-;; (defun zilongshanren-programming/post-init-emacs-lisp ()
-;;     (remove-hook 'emacs-lisp-mode-hook 'auto-compile-mode))
 
 (defun zilongshanren-programming/post-init-python ()
   (add-hook 'python-mode-hook #'(lambda () (modify-syntax-entry ?_ "w")))
@@ -145,12 +141,3 @@
     (when (configuration-layer/package-usedp 'company)
       (spacemacs|add-company-backends :modes shell-script-mode makefile-bsdmake-mode sh-mode lua-mode nxml-mode conf-unix-mode json-mode graphviz-dot-mode))
     ))
-(defun zilongshanren-programming/post-init-company-c-headers ()
-  (progn
-    (setq company-c-headers-path-system
-          (quote
-           ("/usr/include/" "/usr/local/include/" "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1")))
-    (setq company-c-headers-path-user
-          (quote
-           ("/Users/guanghui/cocos2d-x/cocos/platform" "/Users/guanghui/cocos2d-x/cocos" "." "/Users/guanghui/cocos2d-x/cocos/audio/include/")))))
-
