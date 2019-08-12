@@ -25,29 +25,29 @@
     (end-of-line)
     (insert ";")))
 
-(defun zilongshanren/delete-semicolon-at-the-end-of-this-line ()
-  (interactive)
-  (save-excursion
-    (end-of-line)
-    (if (looking-back ";")
-        (progn
-          (backward-char)
-          (delete-char 1)))))
+;; (defun zilongshanren/delete-semicolon-at-the-end-of-this-line ()
+;;   (interactive)
+;;   (save-excursion
+;;     (end-of-line)
+;;     (if (looking-back ";")
+;;         (progn
+;;           (backward-char)
+;;           (delete-char 1)))))
 
-(defun zilongshanren/insert-comma-at-the-end-of-this-line ()
-  (interactive)
-  (save-excursion
-    (end-of-line)
-    (insert ",")))
+;; (defun zilongshanren/insert-comma-at-the-end-of-this-line ()
+;;   (interactive)
+;;   (save-excursion
+;;     (end-of-line)
+;;     (insert ",")))
 
-(defun zilongshanren/delete-comma-at-the-end-of-this-line ()
-  (interactive)
-  (save-excursion
-    (end-of-line)
-    (if (looking-back ",")
-        (progn
-          (backward-char)
-          (delete-char 1)))))
+;; (defun zilongshanren/delete-comma-at-the-end-of-this-line ()
+;;   (interactive)
+;;   (save-excursion
+;;     (end-of-line)
+;;     (if (looking-back ",")
+;;         (progn
+;;           (backward-char)
+;;           (delete-char 1)))))
 
 
 (defun zilongshanren/load-my-layout ()

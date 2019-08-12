@@ -13,15 +13,9 @@
       '(
         projectile
         find-file-in-project
-        multiple-cursors
         evil
-        discover-my-major
-        ace-window
         avy
-        persp-mode
         helm
-        ;; smartparens
-        ;; flyspell-correct
         peep-dired
         ;; markdown-mode
         swiper
@@ -35,18 +29,6 @@
         golden-ratio
         (highlight-global :location (recipe :fetcher github :repo "glen-dai/highlight-global"))
         ))
-
-(defun zilongshanren-misc/init-highlight-global ()
-  (use-package highlight-global
-    :init
-    (progn
-      (spacemacs/set-leader-keys "hh" 'highlight-frame-toggle)
-      (spacemacs/set-leader-keys "hc" 'clear-highlight-frame)
-      (setq-default highlight-faces
-        '(('hi-red-b . 0)
-          ('hi-yellow . 0)
-          ('hi-pink . 0)
-          ('hi-blue-b . 0))))))
 
 (defun zilongshanren-misc/post-init-golden-ratio ()
   (with-eval-after-load 'golden-ratio
@@ -399,27 +381,6 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
       ("b" org-octopress "blog")
       ("r" zilongshanren/run-current-file "run current file"))
 
-    (defhydra multiple-cursors-hydra (:hint nil)
-      "
-       ^Up^            ^Down^        ^Other^
-             ----------------------------------------------
-         [_p_]   Next    [_n_]   Next    [_l_] Edit lines
-         [_P_]   Skip    [_N_]   Skip    [_a_] Mark all
-         [_M-p_] Unmark  [_M-n_] Unmark [_r_] Mark by regexp
-         ^ ^             ^ ^ [_q_] Quit
-       "
-      ("l" mc/edit-lines :exit t)
-      ("a" mc/mark-all-like-this :exit t)
-      ("n" mc/mark-next-like-this)
-      ("N" mc/skip-to-next-like-this)
-      ("M-n" mc/unmark-next-like-this)
-      ("p" mc/mark-previous-like-this)
-      ("P" mc/skip-to-previous-like-this)
-      ("M-p" mc/unmark-previous-like-this)
-      ("r" mc/mark-all-in-region-regexp :exit t)
-      ("q"
-       nil))
-
     (defhydra
       hydra-apropos (:color blue)
       "Apropos"
@@ -549,19 +510,6 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
   (progn
     (global-set-key (kbd "C-s-'") 'avy-goto-char-2)
     (global-set-key (kbd "M-'") 'avy-goto-char-2)))
-
-(defun zilongshanren-misc/post-init-ace-window ()
-  (global-set-key (kbd "C-x C-o") #'ace-window))
-
-(defun zilongshanren-misc/init-discover-my-major ()
-  (use-package discover-my-major
-    :defer t
-    :init
-    (progn
-      (spacemacs/set-leader-keys (kbd "mhm") 'discover-my-major)
-      (evilified-state-evilify makey-key-mode makey-key-mode-get-key-map)
-      )))
-
 
 (defun zilongshanren-misc/post-init-elfeed ()
   (use-package elfeed
@@ -727,102 +675,6 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
     ;; (define-key evil-emacs-state-map [escape] 'evil-normal-state)
     ))
 
-;; (defun zilongshanren-misc/init-visual-regexp ()
-;;   (use-package visual-regexp
-;;     :commands (vr/replace vr/query-replace)))
-
-;; (defun zilongshanren-misc/init-visual-regexp-steroids ()
-;;   (use-package visual-regexp-steroids
-;;     :commands (vr/select-replace vr/select-query-replace)
-;;     :init
-;;     (progn
-;;       (define-key global-map (kbd "C-c r") 'vr/replace)
-;;       (define-key global-map (kbd "C-c q") 'vr/query-replace))))
-
-(defun zilongshanren-misc/init-multiple-cursors ()
-  (use-package multiple-cursors
-    :init
-    (progn
-
-      (bind-key* "C-s-l" 'mc/edit-lines)
-      (bind-key* "C-s-f" 'mc/mark-all-dwim)
-      (bind-key* "C-s-." 'mc/mark-next-like-this)
-      (bind-key* "C-s-," 'mc/mark-previous-like-this)
-      (bind-key* "s->" 'mc/unmark-next-like-this)
-      (bind-key* "s-<" 'mc/unmark-previous-like-this)
-      (bind-key* "C-c C-s-." 'mc/mark-all-like-this)
-
-      ;; http://endlessparentheses.com/multiple-cursors-keybinds.html?source=rss
-      (define-prefix-command 'endless/mc-map)
-      ;; C-x m is usually `compose-mail'. Bind it to something
-      ;; else if you use this command.
-      (define-key ctl-x-map "m" 'endless/mc-map)
-;;; Really really nice!
-      (define-key endless/mc-map "i" #'mc/insert-numbers)
-      (define-key endless/mc-map "h" #'mc-hide-unmatched-lines-mode)
-      (define-key endless/mc-map "a" #'mc/mark-all-like-this)
-
-;;; Occasionally useful
-      (define-key endless/mc-map "d" #'mc/mark-all-symbols-like-this-in-defun)
-      (define-key endless/mc-map "r" #'mc/reverse-regions)
-      (define-key endless/mc-map "s" #'mc/sort-regions)
-      (define-key endless/mc-map "l" #'mc/edit-lines)
-      (define-key endless/mc-map "\C-a" #'mc/edit-beginnings-of-lines)
-      (define-key endless/mc-map "\C-e" #'mc/edit-ends-of-lines)
-      )
-    :config
-    (setq mc/cmds-to-run-once
-          '(
-            counsel-M-x
-            zilongshanren/my-mc-mark-next-like-this))
-    (setq mc/cmds-to-run-for-all
-          '(
-            electric-newline-and-maybe-indent
-            hungry-delete-backward
-            spacemacs/backward-kill-word-or-region
-            spacemacs/smart-move-beginning-of-line
-            evil-substitute
-            lispy-move-beginning-of-line
-            lispy-move-end-of-line
-            lispy-space
-            lispy-delete-backward
-            evil-exit-visual-state
-            evil-backward-char
-            evil-delete-char
-            evil-escape-emacs-state
-            evil-escape-insert-state
-            mwim-beginning-of-code-or-line
-            mwim-end-of-line-or-code
-            evil-exit-emacs-state
-            evil-previous-visual-line
-            evil-next-visual-line
-            evil-forward-char
-            evil-insert
-            evil-next-line
-            evil-normal-state
-            evil-previous-line
-            evil-append
-            evil-append-line
-            forward-sentence
-            kill-sentence
-            org-self-insert-command
-            sp-backward-delete-char
-            sp-delete-char
-            sp-remove-active-pair-overlay
-            orgtbl-hijacker-command-109))
-    ))
-
-(defun zilongshanren-misc/post-init-persp-mode ()
-  (setq persp-kill-foreign-buffer-action 'kill)
-  (setq persp-lighter nil)
-  (when (fboundp 'spacemacs|define-custom-layout)
-    (spacemacs|define-custom-layout "@Cocos2D-X"
-      :binding "c"
-      :body
-      (find-file "~/cocos2d-x/cocos/ui/UIWidget.cpp")
-      (split-window-right)
-      (find-file "~/cocos2d-x/cocos/cocos2d.cpp"))))
-
 (defun zilongshanren-misc/post-init-chinese-wbim ()
   (progn
     (bind-key* ";" 'chinese-wbim-insert-ascii)
@@ -859,18 +711,8 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
           ;; set the root directory into "~/projs/PROJECT_DIR"
           (setq-local ffip-project-root "~/Github/fireball")
           ;; well, I'm not interested in concatenated BIG js file or file in dist/
-          (setq-local ffip-find-options "-not -size +64k -not -iwholename '*/bin/*'")
-          ;; do NOT search files in below directories, the default value is better.
-          (dolist (item '("*/docs/html/*" "*.meta" "*/cocos2d-x/*" "*.asset" "*/visual-tests/res/*"))
-            (push item  ffip-prune-patterns)))
-        (when (ffip-current-full-filename-match-pattern-p "\\(/cocos2d-x\\)")
-          ;; set the root directory into "~/projs/PROJECT_DIR"
-          (setq-local ffip-project-root "~/cocos2d-x")
-          ;; well, I'm not interested in concatenated BIG js file or file in dist/
-          (setq-local ffip-find-options "-not -size +64k -not -iwholename '*/bin/*'")
-          ;; do NOT search files in below directories, the default value is better.
-          ;; (setq-default ffip-prune-patterns '(".git" ".hg" "*.svn" "node_modules" "bower_components" "obj"))
-          ))
+          (setq-local ffip-find-options "-not -size +64k -not -iwholename '*/bin/*'"))
+        )
       (ad-activate 'find-file-in-project))))
 
 
@@ -1072,7 +914,6 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
     ;; prefer two way ediff
     (setq magit-ediff-dwim-show-on-hunks t)
 
-    (setq magit-repository-directories '("~/cocos2d-x/"))
     (setq magit-push-always-verify nil)
 
     (eval-after-load 'magit
