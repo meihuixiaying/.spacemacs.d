@@ -12,22 +12,18 @@
 (setq zilongshanren-misc-packages
       '(
         projectile
-        find-file-in-project
         evil
         avy
         helm
         peep-dired
         ;; markdown-mode
-        swiper
         ;; magit
         ;; git-messenger
-        ;; gist
         hydra
         ;; wrap-region
         helm-ag
         ;; ranger
         golden-ratio
-        (highlight-global :location (recipe :fetcher github :repo "glen-dai/highlight-global"))
         ))
 
 (defun zilongshanren-misc/post-init-golden-ratio ()
@@ -411,41 +407,6 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
 
     ))
 
-(defun zilongshanren-misc/post-init-gist ()
-  (use-package gist
-    :defer t
-    :init
-    (setq gist-list-format
-          '((files "File" 30 nil "%s")
-            (id "Id" 10 nil identity)
-            (created "Created" 20 nil "%D %R")
-            (visibility "Visibility" 10 nil
-                        (lambda
-                          (public)
-                          (or
-                           (and public "public")
-                           "private")))
-            (description "Description" 0 nil identity)))
-    :config
-    (progn
-      (spacemacs|define-transient-state gist-list-mode
-        :title "Gist-mode Transient State"
-        :bindings
-        ("k" gist-kill-current "delete gist")
-        ("e" gist-edit-current-description "edit gist title")
-        ("+" gist-add-buffer "add a file")
-        ("-" gist-remove-file "delete a file")
-        ("y" gist-print-current-url "print url")
-        ("b" gist-browse-current-url "browse gist in browser")
-        ("*" gist-star "star gist")
-        ("^" gist-unstar "unstar gist")
-        ("f" gist-fork "fork gist")
-        ("q" nil "quit" :exit t)
-        ("<escape>" nil nil :exit t))
-      (spacemacs/set-leader-keys-for-major-mode 'gist-list-mode
-        "." 'spacemacs/gist-list-mode-transient-state/body))
-    ))
-
 (defun zilongshanren-misc/init-peep-dired ()
   ;;preview files in dired
   (use-package peep-dired
@@ -455,28 +416,6 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
     :bind (:map dired-mode-map
                 ("P" . peep-dired))))
 
-
-(defun zilongshanren-misc/post-init-flyspell-correct ()
-  (progn
-    (with-eval-after-load 'flyspell
-      (define-key flyspell-mode-map (kbd "C-;") 'flyspell-correct-previous-word-generic))
-    (setq flyspell-correct-interface 'flyspell-correct-ivy)))
-
-(defun zilongshanren-misc/post-init-smartparens ()
-  (use-package smartparens
-    :defer t
-    :init
-    (progn
-      (global-set-key (kbd "C-(") 'wrap-sexp-with-new-round-parens))
-    :config
-    (progn
-      (setq sp-highlight-pair-overlay nil)
-
-      (evil-define-key 'normal sp-keymap
-        (kbd ")>") 'sp-forward-slurp-sexp
-        (kbd ")<") 'sp-forward-barf-sexp
-        (kbd "(>") 'sp-backward-barf-sexp
-        (kbd "(<") 'sp-backward-slurp-sexp))))
 
 (defun zilongshanren-misc/post-init-helm ()
   (with-eval-after-load 'helm
@@ -491,19 +430,19 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
       )
     ))
 
-(defun zilongshanren-misc/init-litable ()
-  (use-package litable
-    :init
-    :defer t))
+;; (defun zilongshanren-misc/init-litable ()
+;;   (use-package litable
+;;     :init
+;;     :defer t))
 
-(defun zilongshanren-misc/init-osx-dictionary ()
-  (use-package osx-dictionary
-    :init
-    (progn
-      (evilified-state-evilify osx-dictionary-mode osx-dictionary-mode-map)
-      (setq osx-dictionary-use-chinese-text-segmentation t)
-      (global-set-key (kbd "C-c d") 'osx-dictionary-search-pointer)
-      )))
+;; (defun zilongshanren-misc/init-osx-dictionary ()
+;;   (use-package osx-dictionary
+;;     :init
+;;     (progn
+;;       (evilified-state-evilify osx-dictionary-mode osx-dictionary-mode-map)
+;;       (setq osx-dictionary-use-chinese-text-segmentation t)
+;;       (global-set-key (kbd "C-c d") 'osx-dictionary-search-pointer)
+;;       )))
 
 
 (defun zilongshanren-misc/post-init-avy ()
@@ -675,48 +614,8 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
     ;; (define-key evil-emacs-state-map [escape] 'evil-normal-state)
     ))
 
-(defun zilongshanren-misc/post-init-chinese-wbim ()
-  (progn
-    (bind-key* ";" 'chinese-wbim-insert-ascii)
-    (setq chinese-wbim-punc-translate-p nil)
-    (spacemacs/declare-prefix "ot" "Toggle")
-    (spacemacs/set-leader-keys
-      "otp" 'chinese-wbim-punc-translate-toggle)
-    (setq chinese-wbim-wb-use-gbk t)
-    (add-hook 'chinese-wbim-wb-load-hook
-              (lambda ()
-                (let ((map (chinese-wbim-mode-map)))
-                  (define-key map "-" 'chinese-wbim-previous-page)
-                  (define-key map "=" 'chinese-wbim-next-page))))
-    ))
-
-
 (defun zilongshanren-misc/post-init-evil-escape ()
   (setq evil-escape-delay 0.2))
-
-(defun zilongshanren-misc/init-find-file-in-project ()
-  (use-package find-file-in-project
-    :defer t
-    :config
-    (progn
-      ;; If you use other VCS (subversion, for example), enable the following option
-      ;;(setq ffip-project-file ".svn")
-      ;; in MacOS X, the search file command is CMD+p
-      ;; for this project, I'm only interested certain types of files
-      (setq-default ffip-patterns '("*.html" "*.js" "*.css" "*.java" "*.xml" "*.cpp" "*.h" "*.c" "*.mm" "*.m" "*.el"))
-      ;; if the full path of current file is under SUBPROJECT1 or SUBPROJECT2
-      ;; OR if I'm reading my personal issue track document,
-      (defadvice find-file-in-project (before my-find-file-in-project activate compile)
-        (when (ffip-current-full-filename-match-pattern-p "\\(/fireball\\)")
-          ;; set the root directory into "~/projs/PROJECT_DIR"
-          (setq-local ffip-project-root "~/Github/fireball")
-          ;; well, I'm not interested in concatenated BIG js file or file in dist/
-          (setq-local ffip-find-options "-not -size +64k -not -iwholename '*/bin/*'"))
-        )
-      (ad-activate 'find-file-in-project))))
-
-
-
 
 (defun zilongshanren-misc/post-init-projectile ()
   (progn
@@ -739,210 +638,3 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
     (spacemacs/set-leader-keys "pf" 'zilongshanren/open-file-with-projectile-or-counsel-git)
     (spacemacs/set-leader-keys "pt" 'my-simple-todo)))
 
-
-
-;; (defun zilongshanren-misc/post-init-prodigy ()
-;;   (progn
-;;     (prodigy-define-tag
-;;       :name 'jekyll
-;;       :env '(("LANG" "en_US.UTF-8")
-;;              ("LC_ALL" "en_US.UTF-8")))
-;;     ;; define service
-;;     (prodigy-define-service
-;;       :name "Preview cocos2d-x web"
-;;       :command "python"
-;;       :args '("-m" "SimpleHTTPServer" "6001")
-;;       :cwd "~/cocos2d-x/web"
-;;       :tags '(work)
-;;       :kill-signal 'sigkill
-;;       :kill-process-buffer-on-stop t)
-
-;;     (prodigy-define-service
-;;       :name "Preview creator engine"
-;;       :command "python"
-;;       :args '("-m" "SimpleHTTPServer" "6004")
-;;       :cwd "~/Github/fireball/engine"
-;;       :tags '(work)
-;;       :kill-signal 'sigkill
-;;       :kill-process-buffer-on-stop t)
-
-;;     (prodigy-define-service
-;;       :name "Hexo Server"
-;;       :command "hexo"
-;;       :args '("server")
-;;       :cwd "~/4gamers.cn"
-;;       :tags '(hexo server)
-;;       :kill-signal 'sigkill
-;;       :kill-process-buffer-on-stop t)
-
-;;     (prodigy-define-service
-;;       :name "Hexo Deploy"
-;;       :command "hexo"
-;;       :args '("deploy" "--generate")
-;;       :cwd "~/4gamers.cn"
-;;       :tags '(hexo deploy)
-;;       :kill-signal 'sigkill
-;;       :kill-process-buffer-on-stop t)
-
-;;     (prodigy-define-service
-;;       :name "Debug Fireball"
-;;       :command "npm"
-;;       :args '("start" "--" "--nologin" "/Users/guanghui/Github/example-cases")
-;;       :cwd "~/Github/fireball/"
-;;       :tags '(work)
-;;       :kill-signal 'sigkill
-;;       :kill-process-buffer-on-stop t)
-
-;;     (prodigy-define-service
-;;       :name "Org wiki preview"
-;;       :command "python"
-;;       :args '("-m" "SimpleHTTPServer" "8088")
-;;       :cwd "~/org-notes/public_html"
-;;       :tags '(org-mode)
-;;       :init (lambda () (browse-url "http://localhost:8088"))
-;;       :kill-signal 'sigkill
-;;       :kill-process-buffer-on-stop t)))
-
-(defun zilongshanren-misc/init-moz-controller ()
-  (use-package moz-controller
-    :init
-    (progn
-      (moz-controller-global-mode t)
-      (spacemacs|hide-lighter moz-controller-mode))))
-
-
-(defun zilongshanren-misc/init-ag ()
-  (use-package ag
-    :init))
-
-(defun zilongshanren-misc/post-init-erc ()
-  (progn
-    (add-hook 'erc-text-matched-hook 'my-erc-hook)
-    (spaceline-toggle-erc-track-off)))
-
-(defun zilongshanren-misc/init-wrap-region ()
-  (use-package wrap-region
-    :init
-    (progn
-      (wrap-region-global-mode t)
-      (wrap-region-add-wrappers
-       '(("$" "$")
-         ("{-" "-}" "#")
-         ("/" "/" nil ruby-mode)
-         ("/* " " */" "#" (java-mode javascript-mode css-mode js2-mode))
-         ("`" "`" nil (markdown-mode ruby-mode))))
-      (add-to-list 'wrap-region-except-modes 'dired-mode)
-      (add-to-list 'wrap-region-except-modes 'web-mode)
-      )
-    :defer t
-    :config
-    (spacemacs|hide-lighter wrap-region-mode)))
-
-
-
-(defun zilongshanren-misc/init-keyfreq ()
-  (use-package keyfreq
-    :init
-    (progn
-      (keyfreq-mode t)
-      (keyfreq-autosave-mode 1))))
-
-(defun zilongshanren-misc/post-init-swiper ()
-  "Initialize my package"
-  (progn
-    (setq ivy-use-virtual-buffers t)
-    (setq ivy-display-style 'fancy)
-
-
-    (evilified-state-evilify ivy-occur-mode ivy-occur-mode-map)
-
-    (use-package ivy
-      :defer t
-      :config
-      (progn
-        (spacemacs|hide-lighter ivy-mode)
-
-        (ivy-set-actions
-         t
-         '(("f" my-find-file-in-git-repo "find files")
-           ("!" my-open-file-in-external-app "Open file in external app")
-           ("I" ivy-insert-action "insert")
-           ("C" ivy-kill-new-action "copy")
-           ("S" ivy-ff-checksum-action "Checksum")))
-
-        (spacemacs/set-leader-keys "fad" 'counsel-goto-recent-directory)
-        (spacemacs/set-leader-keys "faf" 'counsel-find-file-recent-directory)
-
-        (setq ivy-initial-inputs-alist nil)
-        (setq ivy-wrap t)
-        (setq confirm-nonexistent-file-or-buffer t)
-
-        ;; (when (not (configuration-layer/layer-usedp 'helm))
-        ;;   (spacemacs/set-leader-keys "sp" 'counsel-git-grep)
-        ;;   (spacemacs/set-leader-keys "sP" 'spacemacs/counsel-git-grep-region-or-symbol))
-        (define-key ivy-minibuffer-map (kbd "C-c o") 'ivy-occur)
-        (define-key ivy-minibuffer-map (kbd "TAB") 'ivy-call)
-        (define-key ivy-minibuffer-map (kbd "C-s-m") 'ivy-partial-or-done)
-        (define-key ivy-minibuffer-map (kbd "C-c s") 'ivy-ff-checksum)
-        (define-key ivy-minibuffer-map (kbd "s-o") 'ivy-dispatching-done-hydra)
-        (define-key ivy-minibuffer-map (kbd "C-c C-e") 'spacemacs//counsel-edit)
-        (define-key ivy-minibuffer-map (kbd "<f3>") 'ivy-occur)
-        (define-key ivy-minibuffer-map (kbd "C-s-j") 'ivy-immediate-done)
-        (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
-        (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)))
-
-    (define-key global-map (kbd "C-s") 'my-swiper-search)))
-
-
-(defun zilongshanren-misc/post-init-magit ()
-  (progn
-    (with-eval-after-load 'magit
-      (progn
-
-        (add-to-list 'magit-no-confirm 'stage-all-changes)
-        (define-key magit-log-mode-map (kbd "W") 'magit-copy-section-value)
-        (define-key magit-status-mode-map (kbd "s-1") 'magit-jump-to-unstaged)
-        (define-key magit-status-mode-map (kbd "s-2") 'magit-jump-to-untracked)
-        (define-key magit-status-mode-map (kbd "s-3") 'magit-jump-to-staged)
-        (define-key magit-status-mode-map (kbd "s-4") 'magit-jump-to-stashes)
-        (setq magit-completing-read-function 'magit-builtin-completing-read)
-
-        (magit-define-popup-switch 'magit-push-popup ?u
-          "Set upstream" "--set-upstream")
-        ))
-
-    ;; prefer two way ediff
-    (setq magit-ediff-dwim-show-on-hunks t)
-
-    (setq magit-push-always-verify nil)
-
-    (eval-after-load 'magit
-      '(define-key magit-mode-map (kbd "C-c g")
-         #'zilongshanren/magit-visit-pull-request))
-
-    (setq magit-process-popup-time 10)))
-
-(defun zilongshanren-misc/post-init-git-messenger ()
-  (use-package git-messenger
-    :defer t
-    :config
-    (progn
-      (define-key git-messenger-map (kbd "f") 'zilong/github-browse-commit))))
-
-(defun zilongshanren-misc/post-init-markdown-mode ()
-  (progn
-    (add-to-list 'auto-mode-alist '("\\.mdown\\'" . markdown-mode))
-
-    (with-eval-after-load 'markdown-mode
-      (progn
-        ;; (when (configuration-layer/package-usedp 'company)
-        ;;   (spacemacs|add-company-hook markdown-mode))
-
-        (spacemacs/set-leader-keys-for-major-mode 'gfm-mode-map
-          "p" 'zilongshanren/markdown-to-html)
-        (spacemacs/set-leader-keys-for-major-mode 'markdown-mode
-          "p" 'zilongshanren/markdown-to-html)
-
-        (evil-define-key 'normal markdown-mode-map (kbd "TAB") 'markdown-cycle)
-        ))
-    ))
