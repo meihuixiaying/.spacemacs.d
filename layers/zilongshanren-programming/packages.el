@@ -21,7 +21,6 @@
         dumb-jump
         ))
 
-
 (defun zilongshanren-programming/init-editorconfig ()
   (use-package editorconfig
     :init
@@ -39,9 +38,6 @@
     (evil-set-jump)
     (dumb-jump-go))
   (global-set-key (kbd "C-s-g") 'my-dumb-jump))
-
-(defun zilongshanren-programming/post-init-clojure-mode ()
-  )
 
 (defun zilongshanren-programming/post-init-python ()
   (add-hook 'python-mode-hook #'(lambda () (modify-syntax-entry ?_ "w")))
@@ -69,19 +65,12 @@
 (defun zilongshanren-programming/init-flycheck-package ()
   (use-package flycheck-package))
 
-(defun zilongshanren-programming/init-google-c-style ()
-  (use-package google-c-style
-    :init (add-hook 'c-mode-common-hook 'google-set-c-style)))
-
 (defun zilongshanren-programming/post-init-flycheck ()
   (with-eval-after-load 'flycheck
     (progn
       (setq flycheck-display-errors-delay 0.9)
       (setq flycheck-idle-change-delay 2.0)
       )))
-
-(defun zilongshanren-programming/post-init-tagedit ()
-  (add-hook 'web-mode-hook (lambda () (tagedit-mode 1))))
 
 ;; For each extension, define a function zilongshanren/init-<extension-name>
 ;;
@@ -100,38 +89,6 @@
     :defer t
     :init
     (eval-after-load 'flycheck '(flycheck-clojure-setup))))
-
-(defun zilongshanren-programming/post-init-ycmd ()
-  (progn
-    (setq ycmd-tag-files 'auto)
-    (setq ycmd-request-message-level -1)
-    (set-variable 'ycmd-server-command `("python" ,(expand-file-name "~/Github/ycmd/ycmd/__main__.py")))
-    (setq company-backends-c-mode-common '((company-c-headers
-                                            company-dabbrev-code
-                                            company-keywords
-                                            company-gtags :with company-yasnippet)
-                                           company-files company-dabbrev ))
-
-    (zilongshanren|toggle-company-backends company-ycmd)
-    (eval-after-load 'ycmd
-      '(spacemacs|hide-lighter ycmd-mode))
-
-    (spacemacs/set-leader-keys-for-major-mode 'c-mode
-      "tb" 'zilong/company-toggle-company-ycmd)
-    (spacemacs/set-leader-keys-for-major-mode 'c++-mode
-      "tb" 'zilong/company-toggle-company-ycmd)))
-
-(defun zilongshanren-programming/init-gulpjs ()
-  (use-package gulpjs
-    :init
-    (progn
-      (defun zilong/build-engine ()
-        (interactive)
-        (gulpjs-start-task-with-file-name "~/Github/fireball/app.js"))
-
-      (spacemacs/set-leader-keys "ags" 'gulpjs-start-task)
-      (spacemacs/set-leader-keys "agS" 'zilong/build-engine)
-      (spacemacs/set-leader-keys "agr" 'gulpjs-restart-task))))
 
 (defun zilongshanren-programming/post-init-company ()
   (progn
